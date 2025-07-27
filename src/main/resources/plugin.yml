@@ -1,9 +1,4 @@
-name: TemplatePlugin
+name: Black Market Plugin
 version: 1.0
 api-version: 1.21
-main: com.author.template.TemplatePlugin
-
-commands:
-  test:
-    description: Tests the plugin
-    usage: /test
+main: com.author.nick.black_market.Plugin
