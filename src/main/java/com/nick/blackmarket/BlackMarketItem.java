@@ -1,4 +1,4 @@
-package com.nick.black_market;
+package com.nick.blackmarket;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.components.consumable.ConsumableComponent;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import de.tr7zw.nbtapi.*;
 
@@ -19,7 +20,7 @@ public class BlackMarketItem {
 
     private ItemStack item;
 
-    public BlackMarketItem(String name, List<String> description, Material texture, Consumer<ItemStack> onConsume, ConsumableComponent consumable) {
+    public BlackMarketItem(JavaPlugin plugin ,String name, List<String> description, Material texture, Consumer<ItemStack> onConsume, ConsumableComponent consumable) {
         this.name = name;
         this.description = description;
         this.texture = texture;
@@ -43,7 +44,7 @@ public class BlackMarketItem {
                     }
                 });
             }
-        }, Bukkit.getPluginManager().getPlugin("BlackMarket"));
+        }, plugin);
     }
 
     public ItemStack getItem() {

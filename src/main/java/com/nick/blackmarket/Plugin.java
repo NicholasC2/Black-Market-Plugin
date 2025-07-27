@@ -1,4 +1,4 @@
-package com.nick.black_market;
+package com.nick.blackmarket;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.components.consumable.ConsumableComponent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.tr7zw.nbtapi.NBT;
+import net.md_5.bungee.api.ChatColor;
 
 public class Plugin extends JavaPlugin {
 
@@ -23,7 +24,7 @@ public class Plugin extends JavaPlugin {
 
         consumer.setConsumeParticles(false);
         
-        new BlackMarketItem("Fent", List.of("unc trippin off the fent"), Material.DIAMOND, (item) -> {
+        new BlackMarketItem(this, "Fent", List.of(ChatColor.AQUA+"Exotic"), Material.DIAMOND, (item) -> {
             Bukkit.getLogger().info("You consumed the Fent!");
         }, consumer);
     }
@@ -40,6 +41,6 @@ public class Plugin extends JavaPlugin {
                     });
                 }
             }
-        }, Bukkit.getPluginManager().getPlugin("BlackMarket"));
+        }, this);
     }
 }

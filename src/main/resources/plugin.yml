@@ -1,4 +1,4 @@
-name: Black Market Plugin
+name: BlackMarketPlugin
 version: 1.0
 api-version: 1.21
-main: com.author.nick.black_market.Plugin
+main: com.nick.blackmarket.Plugin
