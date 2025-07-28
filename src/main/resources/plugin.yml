@@ -2,3 +2,7 @@ name: BlackMarketPlugin
 version: 1.0
 api-version: 1.21
 main: com.nick.blackmarket.Plugin
+
+commands:
+  blackmarket:
+    permission: blackmarket.commands
