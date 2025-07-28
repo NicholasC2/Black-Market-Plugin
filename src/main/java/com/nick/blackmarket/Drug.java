@@ -26,6 +26,7 @@ public class Drug {
     public Drug(String name, List<String> description, int rarity, NamespacedKey texture) {
         this.name = name;
         this.description = description;
+        
         if(rarity >= 0 && rarity < rarities.size()) {
             this.rarity = rarities.get(rarity);
         } else {
@@ -36,7 +37,7 @@ public class Drug {
         ItemMeta meta = this.item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(name);
-            // add rarity and description to lore
+            
             List<String> lore = new java.util.ArrayList<>();
             lore.add(this.rarity);
             if(description != null && !description.isEmpty()) {
@@ -50,6 +51,8 @@ public class Drug {
             }
 
             this.item.setItemMeta(meta);
+        } else {
+            throw new Error("Error Creating Item");
         }
         NBT.modify(this.item, (nbt) -> {
             nbt.setString("BlackMarketItem", name);
