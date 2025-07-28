@@ -26,7 +26,11 @@ public class Drug {
     public Drug(String name, List<String> description, int rarity, NamespacedKey texture) {
         this.name = name;
         this.description = description;
-        this.rarity = rarities.get(rarity);
+        if(rarity >= 0 && rarity < rarities.size()) {
+            this.rarity = rarities.get(rarity);
+        } else {
+            this.rarity = ChatColor.GRAY+"Unkown Rarity"
+        }
         
         this.item = new ItemStack(Material.SUGAR);
         ItemMeta meta = this.item.getItemMeta();
@@ -34,11 +38,6 @@ public class Drug {
             meta.setDisplayName(name);
             // add rarity and description to lore
             List<String> lore = new java.util.ArrayList<>();
-            if(rarity >= 0 && rarity < rarities.size()) {
-                lore.add(rarities.get(rarity));
-            } else {
-                lore.add(ChatColor.GRAY+"Unknown Rarity");
-            }
             lore.add(this.rarity);
             if(description != null && !description.isEmpty()) {
                 lore.addAll(this.description);
