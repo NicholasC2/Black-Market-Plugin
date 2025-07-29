@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import de.tr7zw.nbtapi.NBT;
@@ -44,7 +45,11 @@ public class Drug {
         }
         lore.addAll(description);
 
-        item.getItemMeta().setLore(lore);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+        }
 
         NBT.modify(item, (nbt) -> {
             nbt.setInteger("Rarity", rarity);
@@ -60,11 +65,16 @@ public class Drug {
         this.description = description;
         
         this.item = new ItemStack(Material.COOKIE);
-        this.item.getItemMeta().setDisplayName(name);
-        this.item.getItemMeta().setEnchantmentGlintOverride(true);
-        
-        if(texture != null) {
-            this.item.getItemMeta().setItemModel(texture);
+        ItemMeta meta = this.item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.RESET+name);
+            meta.setEnchantmentGlintOverride(true);
+
+            if(texture != null) {
+                meta.setItemModel(texture);
+            }
+
+            this.item.setItemMeta(meta);
         }
         NBT.modify(this.item, (nbt) -> {
             nbt.setString("BlackMarketItem", name);
@@ -73,8 +83,8 @@ public class Drug {
         Bukkit.getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void onConsume(PlayerItemConsumeEvent event) {
-                NBT.get(item, (nbt) -> {
-                    if(nbt.getString("BlackMarketItem").equals(name)) {
+                NBT.get(event.getItem(), (nbt) -> {
+                    if(nbt.getString("BlackMarketItem").equalsIgnoreCase(name)) {
                         onConsume.accept(nbt.getInteger("Rarity"), event.getPlayer());
                     }
                 });

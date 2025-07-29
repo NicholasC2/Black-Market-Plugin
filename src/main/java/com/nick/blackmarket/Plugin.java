@@ -18,7 +18,6 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import de.tr7zw.nbtapi.NBT;
 
@@ -52,22 +51,25 @@ public class Plugin extends JavaPlugin {
             List.of(ChatColor.GRAY + "Mellow regen and slowed vision."),
             Material.FERN,
             (rarity, player) -> {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, rarity * 300, rarity));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, (rarity * 300) / 2, 0));
-                if (rarity == 0) {
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (rarity * 300) / 2, 0));
+                player.removePotionEffect(PotionEffectType.SLOWNESS);
+                player.removePotionEffect(PotionEffectType.NAUSEA);
+                player.removePotionEffect(PotionEffectType.WEAKNESS);
+
+                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (rarity + 1) * 300, rarity));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, (rarity + 1) * 600, rarity));
+                if (rarity == 3) {
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 900, 1));
                 }
-                if (rarity <= 1) {
-                    new BukkitRunnable() {
-                        @Override public void run() {
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 400, rarity == 0 ? 2 : 1));
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1));
-                            if (rarity == 0) {
-                                player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 400, 1));
-                            }
+                Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 400, 2 - rarity));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1 - rarity));
+                        if (rarity == 0) {
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 400, 1));
                         }
-                    }.runTaskLater(this, rarity * 300);
-                }
+                    }
+                }, (rarity + 1) * 300);
             }
         );
 
@@ -81,19 +83,19 @@ public class Plugin extends JavaPlugin {
             List.of(ChatColor.GRAY + "Fast, sharp high. Brutal crash."),
             Material.SUGAR,
             (rarity, player) -> {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, rarity * 300, rarity + 1));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, (rarity * 300) / 2, rarity + 1));
-                if (rarity <= 1) {
-                    new BukkitRunnable() {
-                        @Override public void run() {
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 400, rarity == 0 ? 2 : 1));
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1));
-                            if (rarity == 0) {
-                                player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 400, 1));
-                            }
-                        }
-                    }.runTaskLater(this, rarity * 300);
-                }
+                player.removePotionEffect(PotionEffectType.WEAKNESS);
+                player.removePotionEffect(PotionEffectType.SLOWNESS);
+                player.removePotionEffect(PotionEffectType.NAUSEA);
+
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (rarity + 2) * 300, rarity));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, (rarity + 1) * 600, rarity));
+                Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 400, 2 - rarity));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 400, 3 - rarity));
+                    }
+                }, (rarity + 1) * 300);
             }
         );
 
@@ -107,19 +109,19 @@ public class Plugin extends JavaPlugin {
             List.of(ChatColor.GRAY + "Heavy numbness. Time fades."),
             Material.TRIPWIRE_HOOK,
             (rarity, player) -> {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, rarity * 300, rarity));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, rarity * 300, 1));
-                if (rarity <= 1) {
-                    new BukkitRunnable() {
-                        @Override public void run() {
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 400, rarity == 0 ? 2 : 1));
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1));
-                            if (rarity == 0) {
-                                player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 400, 1));
-                            }
-                        }
-                    }.runTaskLater(this, rarity * 300);
-                }
+                player.removePotionEffect(PotionEffectType.SLOWNESS);
+                player.removePotionEffect(PotionEffectType.NAUSEA);
+                player.removePotionEffect(PotionEffectType.WEAKNESS);
+
+                player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, (rarity + 1) * 300, rarity));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, (rarity + 1) * 300, 1));
+                Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 200, 1 - rarity));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 400, 3 - rarity));
+                    }
+                }, (rarity + 1) * 300);
             }
         );
 
@@ -133,20 +135,23 @@ public class Plugin extends JavaPlugin {
             List.of(ChatColor.GRAY + "Intense energy. Mind spirals."),
             Material.BLUE_STAINED_GLASS_PANE,
             (rarity, player) -> {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, rarity * 300, rarity + 1));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, rarity * 300, 1));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, rarity * 300, 1));
-                if (rarity <= 1) {
-                    new BukkitRunnable() {
-                        @Override public void run() {
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 400, rarity == 0 ? 2 : 1));
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1));
-                            if (rarity == 0) {
-                                player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 400, 1));
-                            }
+                player.removePotionEffect(PotionEffectType.SLOWNESS);
+                player.removePotionEffect(PotionEffectType.NAUSEA);
+                player.removePotionEffect(PotionEffectType.WEAKNESS);
+
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (rarity + 1) * 300, rarity + 1));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, (rarity + 1) * 300, 1));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.HASTE, (rarity + 1) * 300, 1));
+                Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 400, 2 - rarity));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1 - rarity));
+                        if (rarity == 0) {
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 400, 1));
                         }
-                    }.runTaskLater(this, rarity * 300);
-                }
+                    }
+                }, (rarity + 1) * 300);
             }
         );
 
@@ -160,19 +165,22 @@ public class Plugin extends JavaPlugin {
             List.of("Euphoric, social high. Intense feelings."),
             Material.BEETROOT_SEEDS, 
             (rarity, player) -> {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, rarity * 300, rarity + 1));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, rarity * 300, 1));
-                if (rarity <= 1) {
-                    new BukkitRunnable() {
-                        @Override public void run() {
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 400, rarity == 0 ? 2 : 1));
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1));
-                            if (rarity == 0) {
-                                player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 400, 1));
-                            }
+                player.removePotionEffect(PotionEffectType.SLOWNESS);
+                player.removePotionEffect(PotionEffectType.NAUSEA);
+                player.removePotionEffect(PotionEffectType.WEAKNESS);
+
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (rarity + 1) * 300, rarity + 1));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (rarity + 1) * 300, 1));
+                Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 400, 3 - rarity));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1 - rarity));
+                        if (rarity == 0) {
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 400, 1));
                         }
-                    }.runTaskLater(this, rarity * 300);
-                }
+                    }
+                }, (rarity + 1) * 300);
             }
         );
 
@@ -186,19 +194,18 @@ public class Plugin extends JavaPlugin {
             List.of(ChatColor.GRAY + "Purple drank. Slow and dreamy."),
             Color.fromRGB(185, 50, 220),
             (rarity, player) -> {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, rarity * 400, rarity + 1));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, rarity * 400, 1));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, rarity * 400, 1));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, rarity * 200, 0));
-                if (rarity <= 1) {
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 300, 1));
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 300, 2));
-                        }
-                    }.runTaskLater(this, rarity * 400);
-                }
+                player.removePotionEffect(PotionEffectType.BLINDNESS);
+                player.removePotionEffect(PotionEffectType.SLOWNESS);
+
+                player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, (2 - rarity) * 400, 1));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (rarity + 1) * 200, 3));
+                Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 300, (2 - rarity)));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 300, 2));
+                    }
+                }, (rarity + 1) * 400);
             }
         );
 
@@ -213,15 +220,16 @@ public class Plugin extends JavaPlugin {
             List.of(ChatColor.GRAY + "Classic brew. Light buzz."),
             Color.fromRGB(231, 193, 69),
             (rarity, player) -> {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, rarity * 300, 0));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, rarity * 300, 0));
-                if (rarity <= 1) {
-                    new BukkitRunnable() {
-                        @Override public void run() {
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1));
-                        }
-                    }.runTaskLater(this, rarity * 300);
-                }
+                player.removePotionEffect(PotionEffectType.NAUSEA);
+
+                player.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, (2 - rarity) * 300, 0));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, (rarity + 1) * 300, 2));
+                Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, (3 - rarity) * 100, (4 - rarity)));
+                    }
+                }, (rarity + 1) * 300);
             }
         );
 
@@ -235,15 +243,16 @@ public class Plugin extends JavaPlugin {
             List.of(ChatColor.GRAY + "Rich and smooth. Relaxing."),
             Color.fromRGB(128, 0, 32),
             (rarity, player) -> {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, rarity * 300, 0));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, rarity * 300, 0));
-                if (rarity <= 1) {
-                    new BukkitRunnable() {
-                        @Override public void run() {
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 400, 1));
-                        }
-                    }.runTaskLater(this, rarity * 300);
-                }
+                player.removePotionEffect(PotionEffectType.NAUSEA);
+
+                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (rarity + 1) * 300, 3));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, (2 - rarity) * 100, 0));
+                Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, (3 - rarity) * 300, 3 - rarity));
+                    }
+                }, (rarity + 1) * 300);
             }
         );
 
@@ -272,7 +281,7 @@ public class Plugin extends JavaPlugin {
     }
 
     public void registerCommands() {
-        Bukkit.getPluginCommand("blackmarket").setExecutor(new BlackMarketCommandExecutor(drugs));
-        Bukkit.getPluginCommand("blackmarket").setTabCompleter(new BlackMarketCommandTabCompleter(drugs));
+        Bukkit.getPluginCommand("blackmarket").setExecutor(new BlackMarketCommandExecutor(drugs, drinks));
+        Bukkit.getPluginCommand("blackmarket").setTabCompleter(new BlackMarketCommandTabCompleter(drugs, drinks));
     }
 }

@@ -13,9 +13,11 @@ import org.bukkit.inventory.ItemStack;
 public class BlackMarketCommandExecutor implements CommandExecutor {
 
     private final List<Drug> drugs;
+    private final List<Drink> drinks;
 
-    public BlackMarketCommandExecutor(List<Drug> drugs) {
+    public BlackMarketCommandExecutor(List<Drug> drugs, List<Drink> drinks) {
         this.drugs = drugs;
+        this.drinks = drinks;
     }
 
     @Override
@@ -28,7 +30,7 @@ public class BlackMarketCommandExecutor implements CommandExecutor {
         String subCommand = args[0].toLowerCase();
 
         if ("give".equals(subCommand)) {
-            if (args.length < 5) {
+            if (args.length < 4) {
                 sender.sendMessage("Usage: /blackmarket give <player|selector> <item> <rarity> <amount>");
                 return false;
             }
@@ -46,25 +48,39 @@ public class BlackMarketCommandExecutor implements CommandExecutor {
             }
 
             int amount;
-            try {
-                amount = Integer.parseInt(args[4]);
-                if (amount < 1) throw new NumberFormatException();
-            } catch (NumberFormatException e) {
-                sender.sendMessage("Invalid amount: " + args[4]);
-                return false;
+            if(args.length < 5) {
+                amount = 1;
+            } else {
+                try {
+                    amount = Integer.parseInt(args[4]);
+                    if (amount < 1) throw new NumberFormatException();
+                } catch (NumberFormatException e) {
+                    sender.sendMessage("Invalid amount: " + args[4]);
+                    return false;
+                }
             }
 
-            Drug wantedDrug = drugs.stream()
-                .filter(drug -> drug.name.equalsIgnoreCase(drugName))
+            Drink wantedDrink = drinks.stream()
+                .filter(drink -> drink.name.replaceAll(" ", "").equalsIgnoreCase(drugName))
                 .findFirst()
                 .orElse(null);
 
-            if (wantedDrug == null) {
+            Drug wantedDrug = drugs.stream()
+                .filter(drug -> drug.name.replaceAll(" ", "").equalsIgnoreCase(drugName))
+                .findFirst()
+                .orElse(null);
+
+            if (wantedDrug == null && wantedDrink == null) {
                 sender.sendMessage("Unknown drug: " + drugName);
                 return false;
             }
 
-            ItemStack itemToGive = wantedDrug.getItem(rarity).clone();
+            ItemStack itemToGive;
+            if (wantedDrug != null) {
+                itemToGive = wantedDrug.getItem(rarity).clone();
+            } else {
+                itemToGive = wantedDrink.getItem(rarity).clone();
+            }
             itemToGive.setAmount(amount);
 
             switch (selector) {

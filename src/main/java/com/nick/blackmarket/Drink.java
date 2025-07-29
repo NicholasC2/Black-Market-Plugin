@@ -12,7 +12,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.Plugin;
 
@@ -45,7 +47,11 @@ public class Drink {
         }
         lore.addAll(description);
 
-        item.getItemMeta().setLore(lore);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+        }
 
         NBT.modify(item, (nbt) -> {
             nbt.setInteger("Rarity", rarity);
@@ -62,8 +68,13 @@ public class Drink {
 
         this.item = new ItemStack(Material.POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
-        meta.setDisplayName(name);
-        meta.setColor(color);
+        if(meta != null) {
+            meta.setDisplayName(ChatColor.RESET+name);
+            meta.setColor(color);
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+
+            item.setItemMeta(meta);
+        }
         NBT.modify(this.item, (nbt) -> {
             nbt.setString("BlackMarketItem", name);
         });
@@ -71,7 +82,7 @@ public class Drink {
         Bukkit.getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void onConsume(PlayerItemConsumeEvent event) {
-                NBT.get(item, (nbt) -> {
+                NBT.get(event.getItem(), (nbt) -> {
                     if(nbt.getString("BlackMarketItem").equals(name)) {
                         onConsume.accept(nbt.getInteger("Rarity"), event.getPlayer());
                     }

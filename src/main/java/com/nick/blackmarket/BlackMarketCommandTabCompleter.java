@@ -10,9 +10,11 @@ import org.bukkit.command.TabCompleter;
 public class BlackMarketCommandTabCompleter implements TabCompleter {
     
     private final List<Drug> drugs;
+    private final List<Drink> drinks;
 
-    public BlackMarketCommandTabCompleter(List<Drug> drugs) {
+    public BlackMarketCommandTabCompleter(List<Drug> drugs, List<Drink> drinks) {
         this.drugs = drugs;
+        this.drinks = drinks;
     }
 
     @Override
@@ -30,11 +32,14 @@ public class BlackMarketCommandTabCompleter implements TabCompleter {
             return playerNames;
             
         } else if (args.length == 3 && "give".equalsIgnoreCase(args[0])) {
-            return drugs.stream()
-                .map(drug -> drug.name)
-                .toList();
-        } else if (args.length >= 4 && "give".equalsIgnoreCase(args[0])) {
-            return List.of();
+            List<String> drugNames = new java.util.ArrayList<>(
+                drugs.stream()
+                    .map(drug -> drug.name)
+                    .toList()
+            );
+            drugNames.addAll(drinks.stream().map(drink -> drink.name).toList());
+
+            return drugNames.stream().filter(name -> name.toLowerCase().startsWith(args[2].toLowerCase())).map(name -> name.replaceAll(" ", "").toLowerCase()).toList();
         }
         return List.of();
     }
