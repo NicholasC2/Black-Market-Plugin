@@ -30,8 +30,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.21.7-R0.1-20250714.093637-4</version>
-            <scope>provided</scope>
+            <version>1.21.8-R0.1-20250723.085822-3</version>
         </dependency>
         <dependency>
             <groupId>de.tr7zw</groupId>

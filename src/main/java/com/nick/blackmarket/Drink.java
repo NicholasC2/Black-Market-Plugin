@@ -6,18 +6,19 @@ import java.util.function.BiConsumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.Plugin;
 
 import de.tr7zw.nbtapi.NBT;
 
-public class Drug {
+public class Drink {
     public String name;
     public List<String> description;
     
@@ -49,22 +50,20 @@ public class Drug {
         NBT.modify(item, (nbt) -> {
             nbt.setInteger("Rarity", rarity);
         });
-
+    
         item.setAmount(amount);
 
         return item;
     }
 
-    public Drug(Plugin plugin, String name, List<String> description, NamespacedKey texture, BiConsumer<Integer, Player> onConsume) {
+    public Drink(Plugin plugin, String name, List<String> description, Color color, BiConsumer<Integer, Player> onConsume) {
         this.name = name;
         this.description = description;
-        
-        this.item = new ItemStack(Material.COOKIE);
-        this.item.getItemMeta().setDisplayName(name);
-        this.item.getItemMeta().setEnchantmentGlintOverride(true);
-        if(texture != null) {
-            this.item.getItemMeta().setItemModel(texture);
-        }
+
+        this.item = new ItemStack(Material.POTION);
+        PotionMeta meta = (PotionMeta) item.getItemMeta();
+        meta.setDisplayName(name);
+        meta.setColor(color);
         NBT.modify(this.item, (nbt) -> {
             nbt.setString("BlackMarketItem", name);
         });

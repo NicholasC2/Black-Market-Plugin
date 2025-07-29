@@ -21,26 +21,36 @@ public class BlackMarketCommandExecutor implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage("Usage: /blackmarket give <player|selector> <item> <amount>");
+            sender.sendMessage("Usage: /blackmarket give <player|selector> <item> <rarity> <amount>");
             return false;
         }
 
         String subCommand = args[0].toLowerCase();
 
         if ("give".equals(subCommand)) {
-            if (args.length < 4) {
-                sender.sendMessage("Usage: /blackmarket give <player|selector> <item> <amount>");
+            if (args.length < 5) {
+                sender.sendMessage("Usage: /blackmarket give <player|selector> <item> <rarity> <amount>");
                 return false;
             }
 
             String selector = args[1];
             String drugName = args[2];
+
+            int rarity;
+            try {
+                rarity = Integer.parseInt(args[3]);
+                if (rarity < 0) throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                sender.sendMessage("Invalid rarity: " + args[3]);
+                return false;
+            }
+
             int amount;
             try {
-                amount = Integer.parseInt(args[3]);
+                amount = Integer.parseInt(args[4]);
                 if (amount < 1) throw new NumberFormatException();
             } catch (NumberFormatException e) {
-                sender.sendMessage("Invalid amount: " + args[3]);
+                sender.sendMessage("Invalid amount: " + args[4]);
                 return false;
             }
 
@@ -54,7 +64,7 @@ public class BlackMarketCommandExecutor implements CommandExecutor {
                 return false;
             }
 
-            ItemStack itemToGive = wantedDrug.item.clone();
+            ItemStack itemToGive = wantedDrug.getItem(rarity).clone();
             itemToGive.setAmount(amount);
 
             switch (selector) {
