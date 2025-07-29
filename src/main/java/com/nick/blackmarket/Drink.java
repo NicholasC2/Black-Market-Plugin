@@ -2,13 +2,12 @@ package com.nick.blackmarket;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -16,7 +15,11 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import de.tr7zw.nbtapi.NBT;
 
@@ -62,7 +65,7 @@ public class Drink {
         return item;
     }
 
-    public Drink(Plugin plugin, String name, List<String> description, Color color, BiConsumer<Integer, Player> onConsume) {
+    public Drink(Plugin plugin, String name, List<String> description, Color color, List<PotionEffectType> effectsHigh, List<PotionEffectType> effectsDown) {
         this.name = name;
         this.description = description;
 
@@ -84,7 +87,23 @@ public class Drink {
             public void onConsume(PlayerItemConsumeEvent event) {
                 NBT.get(event.getItem(), (nbt) -> {
                     if(nbt.getString("BlackMarketItem").equals(name)) {
-                        onConsume.accept(nbt.getInteger("Rarity"), event.getPlayer());
+                        int rarity = nbt.getInteger("Rarity");
+
+                        List<PotionEffect> potionEffects = new ArrayList<>();
+                        effectsHigh.forEach((effect) -> {
+                            potionEffects.add(new PotionEffect(effect, (rarity + 1) * 300, rarity));
+                        });
+
+                        event.getPlayer().addPotionEffects(potionEffects);
+                        PersistentDataContainer playerData = event.getPlayer().getPersistentDataContainer();
+
+                        Integer high = playerData.get(new NamespacedKey(plugin, "high"), PersistentDataType.INTEGER);
+
+                        playerData.set(new NamespacedKey(plugin, "high"), PersistentDataType.INTEGER, high + 1);
+
+                        playerData.set(new NamespacedKey(plugin, "highTimer"), PersistentDataType.INTEGER, (rarity + 1) * 30);
+
+                        playerData.set(new NamespacedKey(plugin, "highDownEffects"), PersistentDataType.STRING, effectsDown.toString());
                     }
                 });
             }
