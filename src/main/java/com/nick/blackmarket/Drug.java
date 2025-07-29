@@ -62,6 +62,7 @@ public class Drug {
         this.item = new ItemStack(Material.COOKIE);
         this.item.getItemMeta().setDisplayName(name);
         this.item.getItemMeta().setEnchantmentGlintOverride(true);
+        
         if(texture != null) {
             this.item.getItemMeta().setItemModel(texture);
         }
