@@ -36,44 +36,47 @@ public class Plugin extends JavaPlugin {
         registerCommands();
 
         new BukkitRunnable() {
+            @SuppressWarnings("deprecation")
             @Override
             public void run() {
                 Bukkit.getOnlinePlayers().forEach(player -> {
                     PersistentDataContainer playerData = player.getPersistentDataContainer();
-                    
-                    int highTimer = playerData.get(new NamespacedKey(Plugin.this, "highTimer"), PersistentDataType.INTEGER);
 
-                    if(highTimer <= 0) {
-                        int high = playerData.get(new NamespacedKey(Plugin.this, "high"), PersistentDataType.INTEGER);
-                        String highDownEffects = playerData.get(new NamespacedKey(Plugin.this, "highDownEffects"), PersistentDataType.STRING);
+                    if(playerData.has(new NamespacedKey(Plugin.this, "high")) && playerData.has(new NamespacedKey(Plugin.this, "highTimer")) && playerData.has(new NamespacedKey(Plugin.this, "highDownEffects"))) {
+                        int highTimer = playerData.get(new NamespacedKey(Plugin.this, "highTimer"), PersistentDataType.INTEGER);
 
-                        List<String> parsedEffects = Arrays.asList(highDownEffects.split(","));
-                        List<PotionEffectType> potionEffectTypes = new ArrayList<>();
-                        parsedEffects.forEach(parsedEffect -> {
-                            potionEffectTypes.add(PotionEffectType.getByName(parsedEffect));
-                        });
+                        if(highTimer <= 0) {
+                            int high = playerData.get(new NamespacedKey(Plugin.this, "high"), PersistentDataType.INTEGER);
+                            String highDownEffects = playerData.get(new NamespacedKey(Plugin.this, "highDownEffects"), PersistentDataType.STRING);
 
-                        List<PotionEffect> potionEffects = new ArrayList<>();
+                            List<String> parsedEffects = Arrays.asList(highDownEffects.split(","));
+                            List<PotionEffectType> potionEffectTypes = new ArrayList<>();
+                            parsedEffects.forEach(parsedEffect -> {
+                                potionEffectTypes.add(PotionEffectType.getByName(parsedEffect));
+                            });
 
-                        potionEffectTypes.forEach((effect) -> {
-                            potionEffects.add(new PotionEffect(effect, (high + 1) * 300, high - 1));
-                        });
+                            List<PotionEffect> potionEffects = new ArrayList<>();
 
-                        if(high >= 20) {
-                            potionEffects.add(new PotionEffect(PotionEffectType.WITHER, PotionEffect.INFINITE_DURATION, 5));
+                            potionEffectTypes.forEach((effect) -> {
+                                potionEffects.add(new PotionEffect(effect, (high + 1) * 300, high - 1));
+                            });
+
+                            if(high >= 20) {
+                                potionEffects.add(new PotionEffect(PotionEffectType.WITHER, PotionEffect.INFINITE_DURATION, 5));
+                            }
+
+                            for(PotionEffect potion : player.getActivePotionEffects()) {
+                                player.removePotionEffect(potion.getType());
+                            }
+                            
+                            player.addPotionEffects(potionEffects);
+
+                            playerData.remove(new NamespacedKey(Plugin.this, "high"));
+                            playerData.remove(new NamespacedKey(Plugin.this, "highTimer"));
+                            playerData.remove(new NamespacedKey(Plugin.this, "highDownEffects"));
+                        } else {
+                            playerData.set(new NamespacedKey(Plugin.this, "highTimer"), PersistentDataType.INTEGER, highTimer - 1);
                         }
-
-                        for(PotionEffect potion : player.getActivePotionEffects()) {
-                            player.removePotionEffect(potion.getType());
-                        }
-                        
-                        player.addPotionEffects(potionEffects);
-
-                        playerData.remove(new NamespacedKey(Plugin.this, "high"));
-                        playerData.remove(new NamespacedKey(Plugin.this, "highTimer"));
-                        playerData.remove(new NamespacedKey(Plugin.this, "highDownEffects"));
-                    } else {
-                        playerData.set(new NamespacedKey(Plugin.this, "highTimer"), PersistentDataType.INTEGER, highTimer - 1);
                     }
                 });
             }
